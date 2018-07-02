@@ -1,0 +1,57 @@
+
+<project name="SecHeaders" default="build" basedir=".">
+
+  <property environment="env"/>
+  <property file="etc/build.properties"/>
+
+  <property name="jarpath" value="secheaders-1.0.1.jar"/>
+
+  <property name="cp" value="lib/gson-2.8.2.jar:lib/servlet-api.jar"/>
+
+  <path id="api.classpath">
+      <fileset dir="lib" includes="**/*.jar"/>
+      <pathelement location="."/>
+  </path>
+
+  <target name="build">
+      <mkdir dir="output"/>
+      <javac debug="on" deprecation="true" includes="com/**/*.java"
+        destdir="output" srcdir="src" classpathref="api.classpath"
+	  	target="1.6" source="1.6"
+		includeantruntime="false">
+	  </javac>
+
+  	<jar destfile="${jarpath}" includes="com/**/*.class" basedir="output" />
+  </target>
+
+  <target name="javadoc">
+      <javadoc destdir="javadoc" sourcepath="src" access="public"
+	  	classpathref="api.classpath">
+		<arg value="-html5"/>
+	  </javadoc>
+  </target>
+
+  <!--
+  <target name="run">
+      <java classpath="${jarpath}:${cp}"
+        classname="com.ajmusgrove.filters.SecHeaders" fork="yes" spawn="yes">
+         <arg value="${arg0}"/>
+      </java>   
+  </target>
+  -->
+  <target name="run">
+      <java classpath="${jarpath}:${cp}"
+        classname="com.ajmusgrove.filters.SecHeaders">
+         <arg value="${arg0}"/>
+      </java>   
+  </target>
+
+  <target name="clean">
+	<delete file="${jarpath}"/>
+	<delete dir="output"/>
+	<delete dir="tmp"/>
+	<delete dir="logs"/>
+  </target>
+
+</project>
+

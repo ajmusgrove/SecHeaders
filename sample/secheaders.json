@@ -1,0 +1,117 @@
+
+{
+	"nonce-length" : 20,
+	"proxyprotoheader" : "x-forwarded-proto",
+	"whitelistFailError" : 403,
+
+	"rules" : [
+		{
+			"name" : "https redirect and prod whitelist",
+			"c" : "this rule only force HTTPS for Production",
+			"c" : "fewer whitelist entries because assets on CDN",
+			"c" : "without url-patterned rule, by default it is same as /*",
+			"host-patterns" : [ "*.ajmusgrove.com" ],
+			"whitelist" : [ "*/", "*.html", "*.jsp", "/images/*.svg",
+				"sitemap.xml", "robots.txt", "favicon.ico", "/api/*.json" ],
+			"forcehttps" : true,
+			"headers" : {
+				"Strict-Transport-Security" :
+					"max-age=63072000; includeSubdomains; preload"
+			}
+		},
+		{
+			"name": "development whitelist",
+			"host-patterns" : [ "localhost" ],
+			"whitelist" : [ "*/", "/images/*.png", "/images/*.jpg",
+				"/lib/*.css", "/lib/*.js", "*.html", "*.jsp", "*.svg",
+				"sitemap.xml", "robots.txt", "favicon.ico",
+				"/api/*.json" ]
+		},
+		{
+			"name" : "All Requests",
+			"c":"default headers for all, could be replaced",
+			"url-patterns" : [ "/*" ],
+			"url-excludes" : [ "*.jpg", "*.svg", "*.css", "*.js", "*.ico",
+				".png", "*.json", "*.xml" ],
+			"headers": {
+				"X-Frame-Options" : "SAMEORIGIN",
+				"Referrer-Policy" : "strict-origin-when-cross-origin",
+				"X-Content-Type-Options" : "nosniff",
+				"Connection" : "keep-alive"
+			},
+			"csp": {
+				"block-all-mixed-content" : true,
+				"upgrade-insecure-requests" : true,
+				"script-nonce": true,
+				"script-sha-file" : "/WEB-INF/cspsha.txt",
+				"style-nonce": false,
+				"default-src": "'self'",
+				"script-src" : "'strict-dynamic' 'self' connect.facebook.net d1l6p2sc9645hc.cloudfront.net data.gosquared.com data2.gosquared.com chat.gosquared.com",
+				"style-src" : "'self' 'unsafe-inline' cdn.teriqra.com *.ajmusgrove.com",
+				"img-src": "'self' data: https://www.teriqra.com https://cdn.teriqra.com teriqra.s3-eu-west-1.amazonaws.com 'unsafe-inline' https://www.facebook.com",
+				"frame-src" : "staticxx.facebook.com www.facebook.com",
+				"object-src" : "'none'",
+				"worker-src" : "'none'",
+				"media-src" : "'none'",
+				"font-src" : "'none'",
+				"base-uri" : "'self'",
+				"form-action" : "'self'",
+				"child-src" : "'none'",
+				"frame-ancestors" : "'none'",
+				"connect-src" : " 'self' cdn.teriqra.com www.google-analytics.com graph.facebook.com tinyfontawesome.ajmusgrove.com"
+			}
+		},
+		{
+			"name": "SVG CSP",
+			"c" : "the default-src self is required for Firefox for SVG Sprites",
+			"url-patterns" : [ "*.svg" ],
+			"csp": {
+				"default-src": "'self'",
+				"style-src": "'self' 'unsafe-inline'",
+				"connect-src": "'self'",
+				"object-src": "'self' data:",
+				"img-src": "'self' data:"
+			}
+		},
+		{
+			"name": "Social Media",
+			"c":"CSP to allow for social media share stuff",
+			"url-patterns": [
+				"/search",
+				"*/user/*"
+			],
+			"csp": {
+				"block-all-mixed-content" : false,
+				"img-src" : "static.licdn.com platform.twitter.com syndication.twitter.com",
+				"frame-src" : "platform.twitter.com syndication.twitter.com platform.linkedin.com",
+				"form-action" : "platform.twitter.com syndication.twitter.com"
+			}
+		},
+		{
+			"name" : "Default No Caching",
+			"headers": {
+				"Cache-Control" :
+					"max-age=0, no-cache, no-store, must-revalidate",
+				"Pragma": "no-cache"
+			}
+		},
+		{
+			"name" : "Static Assets, CDN versioned items",
+			"url-patterns" : [ "*.jpg", "*.svg","*.ico", ".png",
+				"*.js", "*.css" ],
+			"headers": {
+				"Cache-Control" : "max-age=2592000",
+				"Pragma": null
+			}
+		},
+		{
+			"name" : "Low Frequency Change",
+			"url-patterns" : [ "", "/index.jsp", "/index.html", *.json",
+				"*.xml", "*.txt", "/legal/*.jsp", "/legal/*.html" ],
+			"headers": {
+				"Cache-Control" : "max-age=3600",
+				"Pragma": null
+			}
+		}
+	]
+}

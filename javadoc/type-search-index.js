@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"com.ajmusgrove.util","l":"GlobMatcher"},{"p":"com.ajmusgrove.filters","l":"SecHeaders"}]
